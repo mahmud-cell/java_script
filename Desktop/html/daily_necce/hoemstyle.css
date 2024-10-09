@@ -1,0 +1,48 @@
+body{
+    background-image: url(DN\ BACK\ 1.jpeg);
+    background-attachment:scroll;
+    width:auto;
+}
+header{
+    text-align: center;
+}
+.menu{
+    width: auto;
+    height: 80px;
+    background-image: url(dn\ sign.jpeg);
+    background-attachment: unset;
+    border-radius: 40px;
+}
+.dn-sign image{
+    border: radius 40%;
+}
+.menu1{
+    float: left;
+    margin-top: 25px;
+    margin-left: 10px;
+}
+.menu2{
+    float: right;
+    margin-top: 25px;
+    margin-right: 10px;
+}
+.sign-text{
+    font-size: 20px;
+    color: rgb(251, 25, 25);
+    font-style: italic;
+    font-size: 50px;
+}
+
+.sign-text1{
+    color: rgb(74, 75, 74);
+    margin-top: 1px;
+}
+.sign-text2{
+    line-height: 15px;
+    margin-top: 1px;
+}
+.page-photo{
+    text-align: center;
+    margin-top: 100px;
+    
+}

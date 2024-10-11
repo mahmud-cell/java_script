@@ -31,7 +31,7 @@
     const paddleWidth = 80;
     const paddleHeight = 10;
     let pos_x = (canvas.width - paddleWidth) / 2;
-    let R = 6;
+    let R = 10;
     let x = canvas.width / 2;
     let y = canvas.height - 30;
     let dx = 2;
@@ -57,10 +57,10 @@
 function lect_clavier(evt){
     switch(evt.keyCode){
         case 37:
-            pos_x -= 10
+            pos_x -= 20
             break;
         case 39:
-            pos_x +=10
+            pos_x +=20
             break;
     }
 }

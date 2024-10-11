@@ -1,111 +1,124 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu de Raquette</title>
+    
+    <title>etoile</title>
     <style>
         canvas {
-            border: 1px solid black;
+            border: 10px solid blue;
             display: block;
-            margin: auto;
-            background-color: #f0f0f0;
+            margin: 20px auto;
+        }
+        #startButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 3px solid blue;
         }
     </style>
 </head>
 <body>
-    <canvas id="monCanvas" width="600" height="400"></canvas>
 
-    <script>
-        const canvas = document.getElementById('monCanvas');
-        const ctx = canvas.getContext('2d');
+<canvas id="gameCanvas" width="300" height="300"></canvas>
+<p id="score">Score: 0</p>
+<button id="startButton">Start</button>
 
-        let raquette = {
-            x: canvas.width / 2 - 50,
-            y: canvas.height - 30,
-            width: 100,
-            height: 10,
-            dx: 5
-        };
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const paddleWidth = 80;
+    const paddleHeight = 10;
+    let pos_x = (canvas.width - paddleWidth) / 2;
+    let R = 6;
+    let x = canvas.width / 2;
+    let y = canvas.height - 30;
+    let dx = 2;
+    let dy = -2;
+    let score = 0;
+    let isPlaying = false;
 
-        let balle = {
-            x: canvas.width / 2,
-            y: canvas.height - 40,
-            radius: 10,
-            dx: 3,
-            dy: -3
-        };
+    document.getElementById('startButton').addEventListener('click', startGame);
 
-        document.addEventListener('keydown', keyDownHandler);
-        document.addEventListener('keyup', keyUpHandler);
+    function startGame() {
+        isPlaying = true;
+        score = 0;
+        document.getElementById('score').textContent = "Score: " + score;
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = 2;
+        dy = -2;
+        draw();
+    }
+    window.addEventListener('keydown', lect_clavier, true);
 
-        let droite = false;
-        let gauche = false;
 
-        function keyDownHandler(e) {
-            if (e.key === 'Right' || e.key === 'ArrowRight') {
-                droite = true;
-            } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
-                gauche = true;
+function lect_clavier(evt){
+    switch(evt.keyCode){
+        case 37:
+            pos_x -= 10
+            break;
+        case 39:
+            pos_x +=10
+            break;
+    }
+}
+
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, R, 0, Math.PI * 2);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(pos_x, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "orange";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawScore() {
+        document.getElementById('score').textContent = "Score: " + score;
+    }
+
+    function collisionDetection() {
+        if (y + dy > canvas.height - R) {
+            if (x > pos_x && x < pos_x + paddleWidth) {
+                dy = -dy;
+                score++;
+                drawScore();
+            } else {
+                isPlaying = false;
+                alert("Game Over! Your score: " + score);
             }
         }
+    }
 
-        function keyUpHandler(e) {
-            if (e.key === 'Right' || e.key === 'ArrowRight') {
-                droite = false;
-            } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
-                gauche = false;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawPaddle();
+        collisionDetection();
+
+        if (isPlaying) {
+            x += dx;
+            y += dy;
+
+            if (x + dx > canvas.width - R || x + dx < R) {
+                dx = -dx;
             }
+            if (y + dy < R) {
+                dy = -dy;
+            }
+
+            requestAnimationFrame(draw);
         }
+    }
+</script>
 
-        function collisionDetection() {
-            if (balle.y + balle.radius >= raquette.y && 
-                balle.x >= raquette.x && 
-                balle.x <= raquette.x + raquette.width) {
-                balle.dy = -balle.dy;
-            }
-        }
-
-        function dessiner() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Dessiner la raquette
-            ctx.fillStyle = '#0095DD';
-            ctx.fillRect(raquette.x, raquette.y, raquette.width, raquette.height);
-
-            // Dessiner la balle
-            ctx.beginPath();
-            ctx.arc(balle.x, balle.y, balle.radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#FF5733';
-            ctx.fill();
-            ctx.closePath();
-
-            // Déplacement de la balle
-            balle.x += balle.dx;
-            balle.y += balle.dy;
-
-            // Vérifier les collisions avec les murs
-            if (balle.x + balle.radius > canvas.width || balle.x - balle.radius < 0) {
-                balle.dx = -balle.dx;
-            }
-            if (balle.y - balle.radius < 0) {
-                balle.dy = -balle.dy;
-            } else if (balle.y + balle.radius > canvas.height) {
-                document.location.reload(); // Recommencer le jeu si la balle tombe
-            }
-
-            // Déplacement de la raquette
-            if (droite && raquette.x < canvas.width - raquette.width) {
-                raquette.x += raquette.dx;
-            } else if (gauche && raquette.x > 0) {
-                raquette.x -= raquette.dx;
-            }
-
-            collisionDetection();
-            requestAnimationFrame(dessiner);
-        }
-
-        dessiner();
-    </script>
 </body>
 </html>

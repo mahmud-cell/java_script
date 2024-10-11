@@ -16,86 +16,94 @@ window.onload = function()
             return;
         }
 
-var myInterval = setInterval(animate, 1000/500);    // 30 fois par seconde
+var myInterval = setInterval(animate, 1000/50);    // 30 fois par seconde
 
+const paddleWidth = 75;
+    const paddleHeight = 10;
+    let paddleX = (canvas.width - paddleWidth) / 2;
+    let R = 10;
+    let x = canvas.width / 2;
+    let y = canvas.height - 30;
+    let dx = 2;
+    let dy = -2;
+    let score = 0;
+    let isPlaying = false;
 
-var pos_x = 0;
-var pos_y = 280;
+    document.getElementById('startButton').addEventListener('click', startGame);
 
-
-
-window.addEventListener('keydown', lect_clavier, true);
-
-function lect_clavier(evt){
-    switch(evt.keyCode){
-        case 37:
-            pos_x -= 10
-            break;
-        case 39:
-            pos_x +=10
-            break;
+    function startGame() {
+        isPlaying = true;
+        score = 0;
+        document.getElementById('score').textContent = "Score: " + score;
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = 2;
+        dy = -2;
+        draw();
     }
-}
-function getRandom(min, max){               // On renvoie un ENTIER alÃ©atoire 
-    min=Math.ceil(0);                               // compris entre min et max
-    max=Math.floor(10);
-    return Math.floor(Math.random()*(max-min))+min;
-}
-var x = 6; // initial absis de centre e crcle
-var y = 6; // initial absis de centre de cercle
-var a=1;        // increment de dÃ©placement horizontal
-var b=1;        // increment de dÃ©placement vertical
-var W=300;      // largeur du rectangle 
-var H=300;     // hauteur du rectangle
-var R=6;      // rayon du cercle 
-var largeur = 10;
-var longeure = 80;
 
-function animate()
-
-{   
-
-  // Rectangle
-  context.fillStyle = "rgb(199, 208, 204)"; 
-  context.fillRect(0, 0, W, H);
-
-  // Balle
-  context.beginPath();          // Debut d'un nouveau tracÃ©.
-  context.fillStyle = "rgb(96, 80, 220)"; 
-    // A FINIR  
-  context.arc(x,y,R, 0, Math.PI*2); 
-  context.fill();                    // Methode fill(); - forme pleine
-  context.closePath();
-  // la raquette
-  context.fillStyle = "red";
-  context.fillRect(pos_x,pos_y,longeure,largeur);
- 
-  x = x+a;
-  y = y+b;
-
-    if (x>=R & x<=W-R){
-        if (y<=R)
-            b = 1;
-        if (y>=H-R)
-            b = -1;
-        }
-        if (y>=R & y<=H-R){
-            if (x<=R)
-                a = 1;
-            if (x>=W-R)
-                a = -1;
+    document.addEventListener('mousemove', (event) => {
+        if (isPlaying) {
+            const relativeX = event.clientX - canvas.getBoundingClientRect().left;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
             }
-    if (x>=pos_x && pos_x== x - longeure && pos_y == y - R) b = -1 ;{
-        if (pos-y<=y)
-            a = 1;
-        if (pos_y ==  y - longeure)
-            a = 1;
-        if (pos_x == x - R)
-            a = 1;
-    } 
-  
-}
+        }
+    });
+
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, R, 0, Math.PI * 2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawScore() {
+        document.getElementById('score').textContent = "Score: " + score;
+    }
+
+    function collisionDetection() {
+        if (y + dy > canvas.height - R) {
+            if (x > paddleX && x < paddleX + paddleWidth) {
+                dy = -dy;
+                score++;
+                drawScore();
+            } else {
+                isPlaying = false;
+                alert("Game Over! Your score: " + score);
+            }
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawPaddle();
+        collisionDetection();
+
+        if (isPlaying) {
+            x += dx;
+            y += dy;
+
+            if (x + dx > canvas.width - R || x + dx < R) {
+                dx = -dx;
+            }
+            if (y + dy < R) {
+                dy = -dy;
+            }
+
+            requestAnimationFrame(draw);
+        }
 
 }
 
-
+}

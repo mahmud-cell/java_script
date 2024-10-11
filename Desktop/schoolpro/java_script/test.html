@@ -31,6 +31,7 @@
     const paddleWidth = 80;
     const paddleHeight = 10;
     let pos_x = (canvas.width - paddleWidth) / 2;
+    let pos_y = canvas.height - paddleHeight ;
     let R = 10;
     let x = canvas.width / 2;
     let y = canvas.height - 30;
@@ -75,7 +76,7 @@ function lect_clavier(evt){
 
     function drawPaddle() {
         ctx.beginPath();
-        ctx.rect(pos_x, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.rect(pos_x, pos_y , paddleWidth, paddleHeight);
         ctx.fillStyle = "orange";
         ctx.fill();
         ctx.closePath();
